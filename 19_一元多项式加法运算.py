@@ -16,7 +16,6 @@ def Attach(coef, expon, rear):
     rear = rear.next  # rear指向新的最后一个结点
     return rear
 
-
 def ReadPoly():
     n = int(input())  # 读入多项式非零项个数
     p = PolyNode(0, 0)  # 创建临时空头结点
@@ -32,11 +31,81 @@ def ReadPoly():
 
 # 算法2-9：一元多项式加法运算  PolynomialAdd(p1, p2)
 def PolynomialAdd(p1, p2):
-    pass
-
+    """
+    :param p1: 第一个一元式
+    :param p2:  第二个一元式
+    :return:  两个一元式的和
+    注释是旧版 后面没注释的是优化版
+    """
+    # if p1 is None:
+    #     return p2
+    # elif p2 is None:
+    #     return p1
+    # polyNode = PolyNode(0, 0)  # 创建临时空头结点
+    # rear = polyNode  # rear指向多项式最后一个结点，初始化指向空头结点
+    # p2_next = p2
+    # p2_dict = {}
+    # while p2_next is not None:
+    #     if p2_next.expon not in p2_dict:
+    #         p2_dict[p2_next.expon] = p2_next.coef
+    #     else:
+    #         p2_dict[p2_next.expon] += p2_next.coef
+    #     p2_next = p2_next.next
+    # p1_next = p1
+    # while p1_next is not None:
+    #     if p1_next.expon in p2_dict:
+    #         # p2_dict[p1_next.coef] += p1_next.expon
+    #         if p1_next.coef + p2_dict[p1_next.expon] == 0:
+    #             p2_dict.pop(p1_next.expon)
+    #             p1_next = p1_next.next
+    #             continue
+    #         rear = Attach(p1_next.coef + p2_dict[p1_next.expon], p1_next.expon, rear)
+    #         p2_dict.pop(p1_next.expon)
+    #     else:
+    #         rear = Attach(p1_next.coef, p1_next.expon, rear)
+    #     p1_next = p1_next.next
+    # if len(p2_dict) > 0:
+    #     for key, value in p2_dict.items():
+    #         rear = Attach(value, key, rear)
+    # polyNode_dict = {}
+    # rear = polyNode.next
+    # while rear is not None:
+    #     if rear.expon not in polyNode_dict:
+    #         polyNode_dict[rear.expon] = rear.coef
+    #     rear = rear.next
+    # a = sorted(polyNode_dict.keys(), reverse=True)
+    # rear = polyNode
+    # for i in a:
+    #     rear = Attach(polyNode_dict[i], i, rear)
+    # return polyNode.next
+    if p1 is None:
+        return p2
+    elif p2 is None:
+        return p1
+    p2_next = p2
+    p2_dict = {}
+    while p2_next is not None:
+        if p2_next.expon not in p2_dict:
+            p2_dict[p2_next.expon] = p2_next.coef
+        else:
+            p2_dict[p2_next.expon] += p2_next.coef
+        p2_next = p2_next.next
+    p1_next = p1
+    while p1_next is not None:
+        if p1_next.expon in p2_dict:
+            p2_dict[p1_next.expon] += p1_next.coef
+            if p2_dict[p1_next.expon] == 0:
+                p2_dict.pop(p1_next.expon)
+        else:
+            p2_dict[p1_next.expon] = p1_next.coef
+        p1_next = p1_next.next
+    polyNode = PolyNode(0, 0)
+    rear = polyNode
+    for node in sorted(p2_dict.keys(), reverse=True):
+        rear = Attach(p2_dict[node], node, rear)
+    return polyNode.next
 
 # 算法2-9结束
-
 def PrintPoly(p):
     current_node = p
     if p is None:

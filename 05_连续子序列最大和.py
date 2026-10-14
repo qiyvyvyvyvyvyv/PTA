@@ -9,7 +9,7 @@ def MaxSubsequenceSum3( s ):
 
     :return:
     """
-    start, end, current_num, global_num, i = 0, 0, s[0], s[0], 1
+    start, end, current_num, global_num, i = 0, 0, s[0], s[0], 0
     while i < len(s):
         if current_num + s[i] < 0:
             start = i + 1
@@ -24,4 +24,4 @@ def MaxSubsequenceSum3( s ):
         i += 1
     return global_num, start, end
 
-print(MaxSubsequenceSum3( [125,-84,75,61,-54,32,26,-51] ))
+print(MaxSubsequenceSum3( [-2,1,-3,2,-1,3] ))

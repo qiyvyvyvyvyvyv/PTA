@@ -28,87 +28,101 @@ def BigIntAdd(a, b):
     :时间复杂度:O(n)
     当然 注释掉的是旧版思路 不太好
     """
+    c = BigIntNode()
+    carry = 0
+    for i in range(max(a.length, b.length)):
+        total = a.sign * a.digits[i] + b.sign * b.digits[i] + carry
+        c.digits[i] = total % 10  # 负数自动"借位"：-3 % 10 = 7
+        carry = total // 10  # 负数自动留借位：-3 // 10 = -1
+    c.length = max(a.length, b.length)
+    if carry:  # a+b>0 时 carry 只能是 0 或 1
+        c.digits[c.length] = carry
+        c.length += 1
+    while c.length > 1 and c.digits[c.length - 1] == 0:  # 去前导零
+        c.length -= 1
+    c.sign = 1  # a+b>0，结果必为正
+    return c
     # 找到较大的数
     # 现根据正负号 再根据两数实际长度 实在不行了只能遍历
-    if a.sign > 0 and b.sign < 0:
-        max_list, min_list = a, b
-    elif b.sign > 0 and a.sign < 0:
-        max_list, min_list = b, a
-    else:
-        if a.length != b.length:
-            max_list, min_list = (a, b) if a.length > b.length else (b, a)
-        else:
-            max_list, min_list = a, b
-            for i in range(a.length - 1, -1, -1):  # 从高位到低位逐位比较
-                if a.digits[i] != b.digits[i]:
-                    if a.digits[i] > b.digits[i]:
-                        max_list, min_list = a, b
-                    else:
-                        max_list, min_list = b, a
-                    break
-    i = min(a.length - 1, b.length - 1)
-    # 从高位到低位逐位相加/减
-    while i >= 0:
-        # 都是正数
-        if a.sign > 0 and b.sign > 0:
-            sum = max_list.digits[i] + min_list.digits[i]
-            # 合小于10直接加在当前位置上
-            if sum < 10:
-                max_list.digits[i] = sum
-            # 合大于10
-            else:
-                # 先取模后存入当前位置
-                max_list.digits[i] = sum % 10
-                # 由于进位只能进1 因此只需要判断被进为是否为9 如果为9那就说明还需要进位 把该节点置为0 进入下一个节点
-                # 找到不需要进位节点 如 109999 + 1
-                j = 1
-                while max_list.digits[i + j] == 9:
-                    max_list.digits[i + j] = 0
-                    j += 1
-                max_list.digits[i + j] += 1
-                # 这里在判断是否需要增加最高位
-                # 这里判断的是 如 9000 + 1000
-                if i == max_list.length - 1:
-                    max_list.length += 1
-                # 这里判断的是 如果出现了 999 + 1 的情况
-                if i + j > max_list.length - 1:
-                    max_list.length += 1
-        # 一正一负
-        else:
-            sum = max_list.digits[i] - min_list.digits[i]
-            # 合为正
-            if sum > 0:
-                max_list.digits[i] = sum
-            # 合为负
-            elif sum < 0:
-                # 先10加上sum 并把结果存入当前位置
-                max_list.digits[i] = 10 + sum
-                # 去遍历上一位可不可以被错位 如10001 - 9
-                j = 1
-                # 先找到不是0的高位 并减一
-                while max_list.digits[i + j] == 0:
-                    j += 1
-                max_list.digits[i + j] -= 1
-                # 去判断如果被错位高位减一后为0 并且错位高位为最高位 则长度-1
-                if max_list.digits[i + j] == 0 and max_list.digits[max_list.length - 1] == 0:
-                    max_list.length -= 1
-                # 将高位后的节点改为9 由于i + j指向被错位 因此需要先-1
-                # 1001
-                #    9
-                #  998
-                j -= 1
-                while j > 0:
-                    max_list.digits[i + j] = 9
-                    j -= 1
-            # 合为0 且是最高位
-            elif i == max_list.length - 1:
-                max_list.length -= 1
-                max_list.digits[i] = 0
-            # 合为0 但不是最高位
-            else:
-                max_list.digits[i] = 0
-        i -= 1
-    return max_list
+    # if a.sign > 0 and b.sign < 0:
+    #     max_list, min_list = a, b
+    # elif b.sign > 0 and a.sign < 0:
+    #     max_list, min_list = b, a
+    # else:
+    #     if a.length != b.length:
+    #         max_list, min_list = (a, b) if a.length > b.length else (b, a)
+    #     else:
+    #         max_list, min_list = a, b
+    #         for i in range(a.length - 1, -1, -1):  # 从高位到低位逐位比较
+    #             if a.digits[i] != b.digits[i]:
+    #                 if a.digits[i] > b.digits[i]:
+    #                     max_list, min_list = a, b
+    #                 else:
+    #                     max_list, min_list = b, a
+    #                 break
+    # i = min(a.length - 1, b.length - 1)
+    # # 从高位到低位逐位相加/减
+    # while i >= 0:
+    #     # 都是正数
+    #     if a.sign > 0 and b.sign > 0:
+    #         sum = max_list.digits[i] + min_list.digits[i]
+    #         # 合小于10直接加在当前位置上
+    #         if sum < 10:
+    #             max_list.digits[i] = sum
+    #         # 合大于10
+    #         else:
+    #             # 先取模后存入当前位置
+    #             max_list.digits[i] = sum % 10
+    #             # 由于进位只能进1 因此只需要判断被进为是否为9 如果为9那就说明还需要进位 把该节点置为0 进入下一个节点
+    #             # 找到不需要进位节点 如 109999 + 1
+    #             j = 1
+    #             while max_list.digits[i + j] == 9:
+    #                 max_list.digits[i + j] = 0
+    #                 j += 1
+    #             max_list.digits[i + j] += 1
+    #             # 这里在判断是否需要增加最高位
+    #             # 这里判断的是 如 9000 + 1000
+    #             if i == max_list.length - 1:
+    #                 max_list.length += 1
+    #             # 这里判断的是 如果出现了 999 + 1 的情况
+    #             if i + j > max_list.length - 1:
+    #                 max_list.length += 1
+    #     # 一正一负
+    #     else:
+    #         sum = max_list.digits[i] - min_list.digits[i]
+    #         # 合为正
+    #         if sum > 0:
+    #             max_list.digits[i] = sum
+    #         # 合为负
+    #         elif sum < 0:
+    #             # 先10加上sum 并把结果存入当前位置
+    #             max_list.digits[i] = 10 + sum
+    #             # 去遍历上一位可不可以被错位 如10001 - 9
+    #             j = 1
+    #             # 先找到不是0的高位 并减一
+    #             while max_list.digits[i + j] == 0:
+    #                 j += 1
+    #             max_list.digits[i + j] -= 1
+    #             # 去判断如果被错位高位减一后为0 并且错位高位为最高位 则长度-1
+    #             if max_list.digits[i + j] == 0 and max_list.digits[max_list.length - 1] == 0:
+    #                 max_list.length -= 1
+    #             # 将高位后的节点改为9 由于i + j指向被错位 因此需要先-1
+    #             # 1001
+    #             #    9
+    #             #  998
+    #             j -= 1
+    #             while j > 0:
+    #                 max_list.digits[i + j] = 9
+    #                 j -= 1
+    #         # 合为0 且是最高位
+    #         elif i == max_list.length - 1:
+    #             max_list.length -= 1
+    #             max_list.digits[i] = 0
+    #         # 合为0 但不是最高位
+    #         else:
+    #             max_list.digits[i] = 0
+    #     i -= 1
+    # return max_list
     # c = BigIntNode()
     # i = min(a.length - 1, b.length - 1)
     # max_len = max(a.length, b.length)

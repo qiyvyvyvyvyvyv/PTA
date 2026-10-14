@@ -60,12 +60,13 @@ def BigIntMultiply(a, b):
             nxt = c.digits[i + 1] + c.digits[i] // 10
             c.digits[i] %= 10
             c.digits[i + 1] = nxt
-    if a.sign == 1 and b.sign == 1:
-        c.sign = 1
-    elif a.sign == -1 and b.sign == -1:
-        c.sign = 1
-    else:
-        c.sign = -1
+    # if a.sign == 1 and b.sign == 1:
+    #     c.sign = 1
+    # elif a.sign == -1 and b.sign == -1:
+    #     c.sign = 1
+    # else:
+    #     c.sign = -1
+    c.sign = a.sign * b.sign
     return c
 
 def ReadBigInt():

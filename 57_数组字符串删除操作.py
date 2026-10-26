@@ -9,7 +9,6 @@ class StringNode:
         self.data = [''] * kMaxSize
         self.length = 0
 
-
 def InitStr():
     str = StringNode()
     return str
@@ -18,7 +17,7 @@ def StrInsert(s, pos, t):
     n = s.length
     m = t.length
 
-    if pos < 1 or pos > n + 1 or (m + n) > kMaxSize:
+    if pos < 1 or pos >= n + 1 or (m + n) > kMaxSize:
         print("error")
         return s  # 错误，则不能插入，返回原字符串
 

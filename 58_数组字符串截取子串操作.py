@@ -41,9 +41,8 @@ def PrintString(s):
         print(s.data[i], end='')
 
 def SubString(s, pos, length):
-    # if pos < 1 or pos > s.length or length < 0 or pos + length > s.length + 1:
-    #     print("error")
-    #     return InitStr()
+    if pos < 1 or pos > s.length or length < 0 or pos + length > s.length + 1:
+        return InitStr()
     sub_s = InitStr()
     for i in range(length):
         sub_s.data[i] = s.data[pos - 1 + i]

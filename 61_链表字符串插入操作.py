@@ -22,7 +22,32 @@ def InitStr():
     return s
 
 def StrInsert(s, pos, t):
-    pass
+    if pos < 1 or pos > s.length + 1:
+        print("position error")
+        return s
+    if t.length == 0:
+        return s
+    q = None
+    if pos == 1:
+        q = s.head
+        s.head = t.head
+    else:
+        pos -= 2
+        i = 0
+        p = s.head
+        while i < pos:
+            p = p.next
+            i += 1
+        q = p.next
+        p.next = t.head
+    i = 0
+    p = t.head
+    while i < t.length - 1:
+        p = p.next
+        i += 1
+    p.next = q
+    s.length += t.length
+    return s
 
 def ReadString():
     s = InitStr()
